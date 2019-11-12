@@ -1,7 +1,7 @@
 <template>
   <section id="market" class="fullscreen">
     <header>
-      <span>{{ currentLocation }}</span>
+      <span>{{ location }}</span>
       <span id="btn-menu" @click="showOverlay('menu')">
         <img src="@/assets/images/menu.svg" />
       </span>
@@ -12,17 +12,21 @@
             :selectedItem='selectedItem'
             :toggleSelectedItem='toggleSelectedItem'
     />
-    <Summary v-if="overlay === null"
-             :cash='cash'
+    <Summary :cash='cash'
              :debt='debt'
+             :health='health'
              :savings='savings'
              :inventory='inventory'
              :coatCapacity='coatCapacity'
              :daysRemaining='daysRemaining'
     />
-    <Buttons v-if="overlay === null"
-             :selectedItem='selectedItem'
+    <Buttons :selectedItem='selectedItem'
              :showOverlay='showOverlay'
+             :inventory='inventory'
+             :market='market'
+             :netWorth='netWorth'
+             :location='location'
+             :daysRemaining='daysRemaining'
     />
   </section>
 </template>
@@ -36,9 +40,11 @@ import Buttons from './Buttons.vue';
 export default {
   name: 'Main',
   props: [
-    'currentLocation',
+    'location',
     'debt',
     'cash',
+    'netWorth',
+    'health',
     'savings',
     'selectedItem',
     'toggleSelectedItem',

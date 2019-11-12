@@ -1,7 +1,10 @@
 <template>
   <div>
-    <p>Time Remaining: {{ daysRemaining }} days</p>
     <table>
+      <tr>
+        <td><strong>Health:</strong>{{ health }}</td>
+        <td><strong>Days Left:</strong>{{ daysRemaining }}</td>
+      </tr>
       <tr>
         <td><strong>Cash:</strong>{{ formatCurrency(cash) }}</td>
         <td><strong>Debt:</strong>{{ formatCurrency(debt) }}</td>
@@ -20,6 +23,7 @@ export default {
   props: [
     'debt',
     'cash',
+    'health',
     'savings',
     'inventory',
     'coatCapacity',
@@ -52,26 +56,23 @@ div {
   padding-top: 15px !important;
 }
 
-p {
-  padding: 0px 0px 10px 0px;
-}
-
 table {
   padding-left: 0px;
   border-collapse: collapse;
 }
 
-table td {
+td {
   padding-left: 0px;
+  padding-bottom: 5px;
+  border: 0px solid black;
+}
+
+tr:last-child td {
   padding-bottom: 0px;
 }
 
-table tr:first-child td {
-  padding-bottom: 5px;
-}
-
-table td:last-child {
-  padding-left: 15px;
+td:last-child {
+  padding-left: 25px;
 }
 
 span {

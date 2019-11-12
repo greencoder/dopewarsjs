@@ -9,7 +9,7 @@
       </tr>
       <tr v-for="item in availableItems" :key="item.name" @click="toggleSelectedItem(item)" :class="classForRow(item)">
         <td>{{ item.available }}</td>
-        <td>{{ item.name }}</td>
+        <td>{{ item.name|capitalize }}</td>
         <td>${{ item.price }}</td>
         <td>{{ ownedCountForItem(item.name) }}</td>
       </tr>
@@ -28,11 +28,16 @@ export default {
   ],
   computed: {
     availableItems: function() {
-      let items = this.market.filter(function(item) {
-        return item.available > 0;
-      });
-      let shuffledItems = this.shuffleArray(items);
-      return shuffledItems.slice(0,6);
+      let slicedArray = this.market.slice(0, 8);
+      let sortedArray = slicedArray.sort((a, b) => (a.price > b.price) ? 1 : -1)
+      return sortedArray;
+    }
+  },
+  filters: {
+    capitalize: function(value) {
+      if (!value) return '';
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
     }
   },
   methods: {

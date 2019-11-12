@@ -37,13 +37,25 @@ body {
 
 div#app {
   padding: 0px;
+  height: 100%;
 }
 
+/* Desktop browser or mobile in landscape */
 @media screen and (min-width: 480px) {
   body {
     display: flex;
     align-items: top;
     justify-content: center;
+  }
+}
+
+/* Desktop Browsers */
+@media screen and (min-height: 813px) {
+  body {
+    align-items: center;
+  }
+  div#app {
+    height: 700px;
   }
 }
 
