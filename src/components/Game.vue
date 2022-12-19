@@ -78,6 +78,16 @@ export default {
     },
     netWorth: function() {
       return this.cash - this.debt;
+    },
+    boomBustItem: function() {
+      let boomBustItems = this.market.filter(marketItem => {
+        return marketItem.isBoomPrice == true || marketItem.isBustPrice == true;
+      });
+
+      if (boomBustItems.length > 0) {
+        return boomBustItems[0];
+      }
+      return null;
     }
   },
   methods: {
@@ -170,11 +180,33 @@ export default {
       this.overlay = null;
       GameManager.saveGame(this.exportData());
     },
+    generateBustNews: function(item) {
+      return `The market is flooded with cheap ${this.boomBustItem.name}. Prices have tanked!`;
+    },
+    generateBoomNews: function(item) {
+      return `There was a drug bust on a local ${this.boomBustItem.name} supplier. Prices have skyrocketed!`;
+    },
+    generateRandomNews: function() {
+      let newsItems = [
+        'No news is good news, or so I\'m told.',
+        'Have you thought about doing something better with your life?',
+        'Maybe you should read a book sometime.',
+        'Does your mother know you are doing this?',
+        'This sure beats having a real job.',
+      ]
+      let randomNewsItem = newsItems[Math.floor(Math.random() * newsItems.length)];
+      return randomNewsItem;
+    },
     generateNewsItem: function(market, location) {
-      if (market) {
-        return `Have you noticed ${location} kinda sucks?`;
+      if (this.boomBustItem) {
+        if (this.boomBustItem.isBoomPrice) {
+          return this.generateBoomNews(this.boomBustItem);
+        }
+        else {
+          return this.generateBustNews(this.boomBustItem);
+        }
       }
-      return "No news is good news";
+      return this.generateRandomNews();
     },
     showOverlay: function(overlay) {
       this.screen = overlay;
