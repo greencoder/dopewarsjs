@@ -1,33 +1,15 @@
 <template>
   <section id="market" class="fullscreen">
     <header>
-      <span>{{ location }}</span>
-      <span id="btn-menu" @click="showOverlay('menu')">
+      <span>{{ currentLocation.name }}</span>
+      <span id="btn-menu" @click="handleMenuButtonClick">
         <img src="@/assets/images/menu.svg" />
       </span>
     </header>
-    <News :newsItem="newsItem" v-if="newsItem" />
-    <Market :inventory='inventory'
-            :market='market'
-            :selectedItem='selectedItem'
-            :toggleSelectedItem='toggleSelectedItem'
-    />
-    <Summary :cash='cash'
-             :debt='debt'
-             :health='health'
-             :savings='savings'
-             :inventory='inventory'
-             :coatCapacity='coatCapacity'
-             :daysRemaining='daysRemaining'
-    />
-    <Buttons :selectedItem='selectedItem'
-             :showOverlay='showOverlay'
-             :inventory='inventory'
-             :market='market'
-             :netWorth='netWorth'
-             :location='location'
-             :daysRemaining='daysRemaining'
-    />
+    <News />
+    <Summary  />
+    <Market />
+    <Buttons />
   </section>
 </template>
 
@@ -39,28 +21,21 @@ import Buttons from './Buttons.vue';
 
 export default {
   name: 'Main',
-  props: [
-    'location',
-    'debt',
-    'cash',
-    'netWorth',
-    'health',
-    'savings',
-    'selectedItem',
-    'toggleSelectedItem',
-    'daysRemaining',
-    'inventory',
-    'market',
-    'newsItem',
-    'coatCapacity',
-    'showOverlay',
-    'overlay',
-  ],
   components: {
     Market,
     News,
     Summary,
     Buttons,
+  },
+  computed: {
+    currentLocation: function() {
+      return this.$store.getters.currentLocation;
+    }
+  },
+  methods: {
+    handleMenuButtonClick: function() {
+      this.$store.dispatch('showOverlay', 'menu');
+    }
   }
 }
 </script>

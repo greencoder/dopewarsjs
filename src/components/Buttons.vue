@@ -1,13 +1,13 @@
 <template>
   <div>
     <nav>
-      <button @click="showOverlay('buy')" v-bind:disabled="buyButtonDisabled">Buy</button>
-      <button @click="showOverlay('sell')" v-bind:disabled="sellButtonDisabled">Sell</button>
+      <button @click="handleBuyButtonClick" v-bind:disabled="buyButtonDisabled">Buy Drugs</button>
+      <button @click="handleSellButtonClick" v-bind:disabled="sellButtonDisabled">Sell Drugs</button>
     </nav>
     <nav>
-      <button @click="showOverlay('travel')" v-if="daysRemaining > 0">Travel</button>
-      <button @click="finishGame" v-else>Finish Game</button>
-      <button @click="notImplemented()">{{ specialForLocation }}</button>
+      <button @click="handleTravelButtonClick" v-if="canTravel">Travel</button>
+      <button @click="handleFinishGameButtonClick" v-else>Finish Game</button>
+      <button @click="handleSpecialButtonClick">{{ specialForLocation }}</button>
     </nav>
   </div>
 </template>
@@ -15,24 +15,34 @@
 <script>
 export default {
   name: 'Buttons',
-  props: [
-    'daysRemaining',
-    'selectedItem',
-    'showOverlay',
-    'market',
-    'inventory',
-    'location',
-    'netWorth',
+  emits: [
+    'show-overlay',
+    'finish-game'
   ],
   methods: {
-    finishGame: function() {
-      alert(`Nice job! Your final cash was $${this.netWorth}`);
+    handleBuyButtonClick: function() {
+      this.$store.dispatch('showOverlay', 'buy');
     },
-    notImplemented: function() {
-      alert('This is not implemented yet.');
+    handleSellButtonClick: function() {
+      if (this.$store.getters.selectedItem.price) {
+        this.$store.dispatch('showOverlay', 'sell');
+      }
+      else {
+        this.$store.dispatch('showOverlay', 'dump');
+      }
+    },
+    handleTravelButtonClick: function() {
+      this.$store.dispatch('showOverlay', 'travel');
+    },
+    handleFinishGameButtonClick: function() {
+      this.$manager.finishGame();
+    },
+    handleSpecialButtonClick: function() {
+      let specialScreen = this.specialForLocation.toLowerCase();
+      this.$store.dispatch('showOverlay', specialScreen);
     },
     itemIsAvailable: function(item) {
-      let availableItems = this.market.filter(function(marketItem) {
+      let availableItems = this.marketItems.filter(function(marketItem) {
         return (marketItem.name === item.name) && (marketItem.available > 0);
       });
       return availableItems.length > 0;
@@ -45,42 +55,39 @@ export default {
     }
   },
   computed: {
+    canTravel: function() {
+      return this.$store.getters.daysRemaining > 0
+    },
+    daysRemaining: function() {
+      return this.$store.getters.daysRemaining;
+    },
+    inventory: function() {
+      return this.$store.getters.inventory;
+    },
+    marketItems: function() {
+      return this.$store.getters.marketItems;
+    },
+    selectedItem: function() {
+      return this.$store.getters.selectedItem;
+    },
     specialForLocation: function() {
-      var special;
-      switch(this.location) {
-        case 'Queens':
-          special = 'Loan Shark';
-          break;
-        case 'Staten Island':
-          special = 'Doctor';
-          break;
-        case 'The Bronx':
-          special = 'Gun Shop';
-          break;
-        case 'Manhattan':
-          special = 'ATM';
-          break;
-        case 'Brooklyn':
-          special = 'Tailor';
-          break;
-      }
-      return special;
+      return this.$store.getters.specialForLocation;
     },
     buyButtonDisabled: function() {
-      if (this.selectedItem !== null) {
-        if (this.itemIsAvailable(this.selectedItem)) {
-          return false;
-        }
+      if (this.selectedItem !== null && this.itemIsAvailable(this.selectedItem)) {
+        return false;
       }
-      return true;
+      else {
+        return true;
+      }
     },
     sellButtonDisabled: function() {
-      if (this.selectedItem !== null) {
-        if (this.itemIsOwned(this.selectedItem)) {
-          return false;
-        }
+      if (this.selectedItem !== null && this.itemIsOwned(this.selectedItem)) {
+        return false;
       }
-      return true;
+      else {
+        return true;
+      }
     }
   }
 }

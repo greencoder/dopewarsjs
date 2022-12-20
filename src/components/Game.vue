@@ -1,244 +1,70 @@
 <template>
   <div id="container" v-bind:class="{ dark: isShowingOverlay }">
-    <Main v-if="screen === 'main'"
-          :location="location"
-          :debt="debt"
-          :cash="cash"
-          :netWorth="netWorth"
-          :health="health"
-          :savings="savings"
-          :daysRemaining="daysRemaining"
-          :inventory="inventory"
-          :market="market"
-          :coatCapacity="coatCapacity"
-          :showOverlay="showOverlay"
-          :hideOverlay="hideOverlay"
-          :newsItem="newsItem"
-          :selectedItem="selectedItem"
-          :toggleSelectedItem="toggleSelectedItem"
-    />
-    <Travel v-if="screen === 'travel'"
-            :hideOverlay="hideOverlay"
-            :location='location'
-            :travel='travel'
-    />
-    <Menu v-if="screen === 'menu'"
-          :hideOverlay="hideOverlay"
-          :showOverlay="showOverlay"
-          :restartGame="restartGame"
-    />
-    <Buy v-if="screen === 'buy'"
-          :cash="cash"
-          :buyItem="buyItem"
-          :hideOverlay="hideOverlay"
-          :selectedItem="selectedItem"
-          :inventory="inventory"
-          :market="market"
-          :coatCapacity="coatCapacity"
-    />
-    <Sell v-if="screen === 'sell'"
-          :cash="cash"
-          :sellItem="sellItem"
-          :hideOverlay="hideOverlay"
-          :selectedItem="selectedItem"
-          :inventory="inventory"
-    />
-    <Prices v-if="screen === 'prices'"
-            :hideOverlay="hideOverlay"
-    />
+    <Bank v-if="shouldShowScreen('bank')" />
+    <Buy v-if="shouldShowScreen('buy')" />
+    <Doctor v-if="shouldShowScreen('doctor')" />
+    <Dump v-if="shouldShowScreen('dump')" />
+    <GameOver v-if="shouldShowScreen('game over')" />
+    <GunShop v-if="shouldShowScreen('gun shop')" />
+    <LoanShark v-if="shouldShowScreen('loan shark')" />
+    <Main v-if="shouldShowScreen('main')" />
+    <Menu v-if="shouldShowScreen('menu')"  />
+    <Police v-if="shouldShowScreen('police')" />
+    <Prices v-if="shouldShowScreen('prices')" />
+    <Sell v-if="shouldShowScreen('sell')" />
+    <Tailor v-if="shouldShowScreen('tailor')" />
+    <Travel v-if="shouldShowScreen('travel')" />
   </div>
 </template>
 
 <script>
-import Main from './Main.vue';
-import Travel from './Travel.vue';
-import Menu from './Menu.vue';
+import Bank from './Bank.vue';
 import Buy from './Buy.vue';
-import Sell from './Sell.vue';
+import Doctor from './Doctor.vue';
+import Dump from './Dump.vue';
+import GameOver from './GameOver.vue';
+import GunShop from './GunShop.vue';
+import LoanShark from './LoanShark.vue';
+import Main from './Main.vue';
+import Menu from './Menu.vue';
+import Police from './Police.vue';
 import Prices from './Prices.vue';
-
-import GameManager from '../scripts/Manager.js';
+import Sell from './Sell.vue';
+import Tailor from './Tailor.vue';
+import Travel from './Travel.vue';
 
 export default {
   name: 'Game',
   components: {
-    Main,
-    Travel,
-    Menu,
+    Bank,
     Buy,
-    Sell,
+    Doctor,
+    Dump,
+    GameOver,
+    GunShop,
+    LoanShark,
+    Main,
+    Menu,
+    Police,
     Prices,
+    Sell,
+    Tailor,
+    Travel
   },
   mounted: function() {
-    this.startGame();
+    this.$manager.startGame();
   },
   computed: {
     isShowingOverlay: function() {
-      return this.screen !== 'main';
+      return this.$store.getters.isShowingOverlay;
     },
     netWorth: function() {
-      return this.cash - this.debt;
-    },
-    boomBustItem: function() {
-      let boomBustItems = this.market.filter(marketItem => {
-        return marketItem.isBoomPrice == true || marketItem.isBustPrice == true;
-      });
-
-      if (boomBustItems.length > 0) {
-        return boomBustItems[0];
-      }
-      return null;
+      return this.$store.getters.netWorth;
     }
   },
   methods: {
-    startGame: function() {
-      let data = GameManager.loadGame();
-
-      if (data) {
-        this.importData(data);
-      }
-      else {
-        let newGameData = GameManager.initializeGame();
-        this.importData(newGameData);
-        GameManager.saveGame(newGameData);
-      }
-    },
-    exportData: function() {
-      return {
-        overlay: this.overlay,
-        screen: this.screen,
-        location: this.location,
-        selectedItem: this.selectedItem,
-        debt: this.debt,
-        cash: this.cash,
-        health: this.health,
-        savings: this.savings,
-        daysRemaining: this.daysRemaining,
-        coatCapacity: this.coatCapacity,
-        newsItem: this.newsItem,
-        inventory: this.inventory,
-        market: this.market,
-      }
-    },
-    importData: function(dict) {
-        this.overlay = dict.overlay;
-        this.screen = dict.screen;
-        this.location = dict.location;
-        this.selectedItem = dict.selectedItem;
-        this.debt = dict.debt;
-        this.cash = dict.cash;
-        this.health = dict.health;
-        this.savings = dict.savings;
-        this.daysRemaining = dict.daysRemaining;
-        this.coatCapacity = dict.coatCapacity;
-        this.newsItem = dict.newsItem;
-        this.inventory = dict.inventory;
-        this.market = dict.market;
-    },
-    restartGame: function() {
-      GameManager.deleteGame();
-      this.startGame();
-    },
-    sellItem: function(sellItem, quantity, profit) {
-      // Update the inventory
-      let inventoryIndex = this.inventory.map(item => item.name).indexOf(sellItem.name);
-      let inventoryItem = this.inventory[inventoryIndex];
-      inventoryItem.owned -= quantity;
-
-      // Update the market
-      let marketIndex = this.market.map(item => item.name).indexOf(sellItem.name);
-      let marketItem = this.market[marketIndex];
-      marketItem.available += quantity;
-
-      this.cash += profit;
-      this.selectedItem = null;
-    },
-    buyItem: function(buyItem, quantity, cost) {
-      // Update the inventory
-      let inventoryIndex = this.inventory.map(item => item.name).indexOf(buyItem.name);
-      let inventoryItem = this.inventory[inventoryIndex];
-      inventoryItem.owned += quantity;
-
-      // Update the market
-      let marketIndex = this.market.map(item => item.name).indexOf(buyItem.name);
-      let marketItem = this.market[marketIndex];
-      marketItem.available -= quantity;
-
-      this.cash -= cost;
-      this.selectedItem = null;
-    },
-    travel: function(newLocation) {
-      this.selectedItem = null;
-      this.location = newLocation;
-      this.startNewDay(newLocation);
-    },
-    startNewDay: function(location) {
-      this.daysRemaining -= 1;
-      this.market = GameManager.randomizeMarket();
-      this.newsItem = this.generateNewsItem(this.market, location);
-      this.screen = 'main';
-      this.overlay = null;
-      GameManager.saveGame(this.exportData());
-    },
-    generateBustNews: function(item) {
-      return `The market is flooded with cheap ${this.boomBustItem.name}. Prices have tanked!`;
-    },
-    generateBoomNews: function(item) {
-      return `There was a drug bust on a local ${this.boomBustItem.name} supplier. Prices have skyrocketed!`;
-    },
-    generateRandomNews: function() {
-      let newsItems = [
-        'No news is good news, or so I\'m told.',
-        'Have you thought about doing something better with your life?',
-        'Maybe you should read a book sometime.',
-        'Does your mother know you are doing this?',
-        'This sure beats having a real job.',
-      ]
-      let randomNewsItem = newsItems[Math.floor(Math.random() * newsItems.length)];
-      return randomNewsItem;
-    },
-    generateNewsItem: function(market, location) {
-      if (this.boomBustItem) {
-        if (this.boomBustItem.isBoomPrice) {
-          return this.generateBoomNews(this.boomBustItem);
-        }
-        else {
-          return this.generateBustNews(this.boomBustItem);
-        }
-      }
-      return this.generateRandomNews();
-    },
-    showOverlay: function(overlay) {
-      this.screen = overlay;
-    },
-    hideOverlay: function() {
-      this.selectedItem = null;
-      this.screen = 'main';
-    },
-    toggleSelectedItem: function(item) {
-      if (this.selectedItem && this.selectedItem.name === item.name) {
-        this.selectedItem = null;
-      }
-      else {
-        this.selectedItem = item;
-      }
-    }
-  },
-  data() {
-    return {
-      overlay: null,
-      screen: null,
-      location: null,
-      selectedItem: null,
-      debt: null,
-      cash: null,
-      health: null,
-      savings: null,
-      daysRemaining: null,
-      coatCapacity: null,
-      newsItem: null,
-      inventory: [],
-      market: [],
+    shouldShowScreen: function(screen) {
+      return screen === this.$store.getters.currentScreen;
     }
   }
 }
