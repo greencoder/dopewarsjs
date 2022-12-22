@@ -3,14 +3,26 @@
     <table>
       <tr>
         <th>Avail</th>
-        <th>Item</th>
+        <th width="*">Item</th>
         <th>Price</th>
-        <th>Own</th>
+        <th>Owned</th>
       </tr>
-      <tr v-for="item in availableItems" :key="item.name" @click="toggleSelectedItem(item)" :class="classForRow(item)">
+      <tr v-for="item in marketItems"
+          @click="toggleSelectedItem(item)"
+          :key="item.name"
+          :class="classForRow(item)">
         <td>{{ item.available }}</td>
-        <td>{{ item.name|capitalize }}</td>
+        <td class="left">{{ item.name|capitalize }}</td>
         <td>${{ item.price }}</td>
+        <td>{{ ownedCountForItem(item.name) }}</td>
+      </tr>
+      <tr v-for="item in unavailableItems"
+          @click="toggleSelectedItem(item)"
+          :key="item.name"
+          :class="classForRow(item)">
+        <td class="centered">-</td>
+        <td>{{ item.name|capitalize }}</td>
+        <td>-</td>
         <td>{{ ownedCountForItem(item.name) }}</td>
       </tr>
     </table>
@@ -20,17 +32,18 @@
 <script>
 export default {
   name: 'Market',
-  props: [
-    'inventory',
-    'market',
-    'selectedItem',
-    'toggleSelectedItem',
-  ],
   computed: {
-    availableItems: function() {
-      let slicedArray = this.market.slice(0, 8);
-      let sortedArray = slicedArray.sort((a, b) => (a.price > b.price) ? 1 : -1)
-      return sortedArray;
+    marketItems: function() {
+      return this.$store.getters.marketItems;
+    },
+    unavailableItems: function() {
+      return this.$store.getters.unavailableInventoryItems;
+    },
+    inventory: function() {
+      return this.$store.getters.inventory;
+    },
+    selectedItem: function() {
+      return this.$store.getters.selectedItem;
     }
   },
   filters: {
@@ -41,19 +54,21 @@ export default {
     }
   },
   methods: {
-    shuffleArray: function(array) {
-      for (let i=array.length-1; i>0; i--) {
-        const j = Math.floor(Math.random() * i);
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-      return array;
+    toggleSelectedItem: function(item) {
+      this.$store.commit('selectItem', item);
     },
     classForRow: function(item) {
+      let classList = [];
+
       if (this.selectedItem && item.name === this.selectedItem.name) {
-        return "selected"
+        classList.push('selected');
       }
+
+      if (item.isBoomPrice || item.isBustPrice) {
+        classList.push('boom-bust');
+      }
+
+      return classList.join(' ');
     },
     ownedCountForItem: function(itemName) {
       for (let inventoryItem of this.inventory) {
@@ -85,15 +100,22 @@ tr.selected {
   background-color: #DDE9C9;
 }
 
+tr.boom-bust {
+  font-weight: 600;
+}
+
 td, th {
   border: 1px solid #353A3F;
-  padding: 6px 5px;
+  padding: 8px 6px;
+  height: 36px;
+  text-align: center;
 }
 
 th {
   font-size: 0.75em;
-  text-align: left;
-  font-weight: normal;
+  height: 18px;
+  font-weight: 700;
+  background-color: #efefef;
 }
 
 </style>

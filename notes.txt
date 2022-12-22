@@ -1,0 +1,50 @@
+https://www.theverge.com/2022/11/25/23478396/internet-archive-palm-pilot-emulation-games-apps-dope-wars
+https://kevin.burke.dev/old_kevin/dopewars-explained/
+
+The other day I downloaded DopeWars for my iBook. The game is really addictive, and I think has some educational value - kids are responsible for growing $2000 into a large fortune. They can put money in the Bank, where it gets 10% return a day, or they can hold onto it, and risk it getting taken by the police.
+
+Despite the comic surface, I genuinely think this game teaches kids how to exploit market inefficiencies, how to manage risks, and how to buy commodities low and sell high. And yes, the game product need to be drugs, because no one would play a game where the price of haircare products differed from borough to borough.
+
+Frustrated by low scores, I looked at the game's code in an effort to take all of the luck/risk out of the game and turn it into a science. I've been looking at a lot of widget code in preparation for building my A's widget. The code for any freeware widget is available, although hard to read (Search for the widget in Spotlight, then CTRL-click on it in a Finder window and click "Show package contents." Then open up the file that ends in .js).
+
+So I found the code, which is kinda cool, and saves a lot of guesswork. WARNING: The following may spoil your enjoyment of the game. Stop reading if you want.
+
+For normal drug prices, the computer picks a value at random from within these ranges:
+
+Acid 1000-4499
+Cocaine 15000-29999
+Ecstasy 10-59
+PCP 1000-3499
+Heroin 5000-13999
+Weed 300-899
+Shrooms 600-1349
+Speed 70-249
+
+Each drug has a 1 in 8 chance of not being available.
+If the cops do a bust, the randomly selected price is multiplied by 4.
+If addicts are buying at outrageous prices, the price is multiplied by 8.
+
+Odds:
+
+Cheap Acid (/4): 1 in 17
+Cops bust Cocaine (x4): 1 in 35
+Addicts buy Cocaine (x8): 1 in 35
+Cops bust Ecstasy (x4): 1 in 13
+Cheap Ecstasy (/8): 1 in 11
+Cops bust PCP (x4): 1 in 20
+Addicts buy PCP (x8): 1 in 20
+Cops bust Heroin (x4): 1 in 25
+Addicts buy Heroin (x8): 1 in 25
+Cops bust Weed (x4): 1 in 13
+Cheap Weed (/4): 1 in 10
+Addicts buy Shrooms: 1 in 17
+Cops bust Speed (x4): 1 in 15
+Addicts buy Speed (x8): 1 in 20
+
+You have a 1 in 7 chance of being offered more pockets, and a 1 in 7 chance of being offered a gun.
+
+Officer Hardass has a 1 in 7 chance of finding you. If you don't have any drugs, they won't chase you. If If you choose to fight, you have a 1 in 4 chance of killing an officer. They have a 1 in 6 chance of wounding you, and a 1 in 25 chance of killing you.
+
+If you run, you have a 1 in 15 chance of losing all your dope and half your cash. So there's the game.
+
+I'm sure you can figure out your expected value for any exchange and help maximize your profits.

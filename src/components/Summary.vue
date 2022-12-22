@@ -2,16 +2,16 @@
   <div>
     <table>
       <tr>
-        <td><strong>Health:</strong>{{ health }}</td>
+        <td><strong>Cash:</strong>{{ formatCurrency(cash) }}</td>
         <td><strong>Days Left:</strong>{{ daysRemaining }}</td>
       </tr>
       <tr>
-        <td><strong>Cash:</strong>{{ formatCurrency(cash) }}</td>
         <td><strong>Debt:</strong>{{ formatCurrency(debt) }}</td>
+        <td><strong>Health:</strong>{{ health }}%</td>
       </tr>
       <tr>
-        <td><strong>Coat:</strong>{{ inventoryCount }}/{{ coatCapacity }}</td>
         <td><strong>Savings:</strong>{{ formatCurrency(savings) }}</td>
+        <td><strong>Inventory:</strong>{{ inventoryOwned }}/{{ inventoryCapacity }}</td>
       </tr>
     </table>
   </div>
@@ -20,21 +20,31 @@
 <script>
 export default {
   name: 'Summary',
-  props: [
-    'debt',
-    'cash',
-    'health',
-    'savings',
-    'inventory',
-    'coatCapacity',
-    'daysRemaining',
-  ],
   computed: {
-    inventoryCount: function() {
-      return this.inventory.reduce(function (acc, obj) {
-        return acc + obj.owned;
-      }, 0);
-}
+    inventory: function() {
+      return this.$store.getters.inventory;
+    },
+    inventoryCapacity() {
+      return this.$store.getters.inventoryCapacity;
+    },
+    health() {
+      return this.$store.getters.health;
+    },
+    daysRemaining() {
+      return this.$store.getters.daysRemaining;
+    },
+    inventoryOwned: function() {
+      return this.$store.getters.inventoryOwned;
+    },
+    cash: function() {
+      return this.$store.getters.cash;
+    },
+    debt: function() {
+      return this.$store.getters.debt;
+    },
+    savings: function() {
+      return this.$store.getters.savings;
+    }
   },
   methods: {
     formatCurrency: function(value) {
@@ -59,20 +69,19 @@ div {
 table {
   padding-left: 0px;
   border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 6px;
+  font-size: 0.9em;
 }
 
 td {
-  padding-left: 0px;
-  padding-bottom: 5px;
+  width: 50%;
+  padding: 4px 0px;
   border: 0px solid black;
 }
 
 tr:last-child td {
   padding-bottom: 0px;
-}
-
-td:last-child {
-  padding-left: 25px;
 }
 
 span {
@@ -81,7 +90,7 @@ span {
 }
 
 strong {
-  font-weight: 500;
+  font-weight: 600;
   display: inline-block;
   margin-right: 4px;
 }

@@ -17,6 +17,30 @@ export default {
 
 <style>
 
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 400;
+  src: url('./assets/fonts/RobotoMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 500;
+  src: url('./assets/fonts/RobotoMono-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 600;
+  src: url('./assets/fonts/RobotoMono-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-weight: 700;
+  src: url('./assets/fonts/RobotoMono-Bold.ttf') format('truetype');
+}
+
 * {
   box-sizing: border-box;
   font-family: 'Roboto Mono', monospace;
@@ -32,12 +56,21 @@ html, body {
 body {
   padding: 0px;
   margin: 0px;
-  font-size: 14px;
+  font-size: 16px;
+  color: #353a3e;
+}
+
+a:link, a:visited, a:hover {
+  color: inherit;
 }
 
 div#app {
   padding: 0px;
   height: 100%;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 /* Desktop browser or mobile in landscape */
@@ -50,7 +83,7 @@ div#app {
 }
 
 /* Desktop Browsers */
-@media screen and (min-height: 813px) {
+@media screen and (min-width: 1024px) {
   body {
     align-items: center;
   }

@@ -2,12 +2,13 @@
   <section id="menu" class="overlay">
     <div>
       <header>
-        <span>Sell {{ selectedItem.name }}</span>
+        <span>Dump {{ selectedItem.name }}</span>
         <img src="@/assets/images/close.svg" @click="handleCloseOverlayButtonClick" />
       </header>
       <div class="inner">
-        <p>How {{ selectedItem.adjective }} {{ selectedItem.name|lower }} do you want to sell?</p>
-        <p class="subtext">You have {{ inventoryCount|pluralize('unit') }} available to sell at ${{ selectedItem.price }}/each.</p>
+        <p>Nobody is interested in your {{ selectedItem.name|lower }} right now, but you can dump it to
+          make room for other drugs.</p>
+        <p class="subtext">You have {{ inventoryCount|pluralize('unit') }} that you can get rid of.</p>
         <nav>
           <button @click="changeQuantity(0)">None</button>
           <button @click="incrementQuantity(-1)" v-bind:disabled="quantity === 0">-</button>
@@ -15,8 +16,8 @@
           <button @click="incrementQuantity(1)" v-bind:disabled="quantity >= inventoryCount">+</button>
           <button @click="changeQuantity(inventoryCount)">Max</button>
         </nav>
-        <button @click="handleSellButtonPress" class="full-width" v-bind:disabled="quantity === 0">
-          {{ buttonTitle }}
+        <button @click="handleDumpButtonPress" class="full-width" v-bind:disabled="quantity === 0">
+          Dump
         </button>
       </div>
     </div>
@@ -25,16 +26,15 @@
 
 <script>
 export default {
-  name: 'Sell',
+  name: 'Dump',
   data: function() {
     return {
       quantity: 0
     }
   },
   methods: {
-    handleSellButtonPress: function() {
-      let profit = this.selectedItem.price * this.quantity;
-      this.sellItem(this.selectedItem, this.quantity, profit);
+    handleDumpButtonPress: function() {
+      this.dumpItem(this.selectedItem, this.quantity);
       this.hideOverlay();
     },
     incrementQuantity(value) {
@@ -43,8 +43,8 @@ export default {
     changeQuantity(value) {
       this.quantity = value;
     },
-    sellItem: function(item, quantity, profit) {
-      this.$store.commit('sellItem', { item, quantity, profit });
+    dumpItem: function(item, quantity) {
+      this.$store.commit('dumpItem', { item, quantity });
     },
     hideOverlay: function() {
       this.$store.dispatch('hideOverlay');
@@ -68,15 +68,6 @@ export default {
     },
     selectedItem: function() {
       return this.$store.getters.selectedItem;
-    },
-    buttonTitle: function() {
-      if (this.quantity === 0) {
-        return 'Sell';
-      }
-      else {
-        let profit = this.quantity * this.selectedItem.price;
-        return `Sell for $${profit}`;
-      }
     },
     inventoryCount: function() {
       let inventory = this.$store.getters.inventory;
