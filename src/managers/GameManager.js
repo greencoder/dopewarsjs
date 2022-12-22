@@ -1,7 +1,7 @@
 const LOCAL_STORAGE_KEY = 'dopewars';
 const GAME_DAYS = 30;
 const STARTING_CASH = 2500;
-const STARTING_INVENTORY_CAPACITY = 30;
+const STARTING_INVENTORY_CAPACITY = 25;
 const NUMBER_OF_MARKET_ITEMS = 6;
 
 import {ITEMS} from './items.js';
@@ -109,11 +109,11 @@ class GameManager {
     let newsItem = this.generateNewsItem();
     this.store.commit('updateNewsItem', newsItem);
 
-    // You have a 1/7 chance of being hassled by the police if you have drugs
+    // You have a 1/10 chance of being hassled by the police if you have drugs
     let showPoliceResult = Math.floor(Math.random() * 100) + 1;
     let inventoryCount = this.store.getters.inventoryOwned;
 
-    if (showPoliceResult >= 86 && inventoryCount > 0) {
+    if (showPoliceResult >= 90 && inventoryCount > 0) {
       this.store.dispatch('showOverlay', 'police');
     }
 
@@ -191,8 +191,6 @@ class GameManager {
     let shouldBoomBust = randomNumber >= 30;
 
     if (shouldBoomBust && !isFirstDay) {
-      console.log("in boom bust");
-
       let randomItemIndex = Math.floor(Math.random() * marketArray.length);
       let randomItemName = marketArray[randomItemIndex].name;
       let shouldBoom = Math.floor(Math.random() * 100) + 1 >= 50;
@@ -237,6 +235,71 @@ class GameManager {
 
   createEmptyInventory(availableItems) {
     return availableItems.map(item => ({name: item.name, owned: 0}));
+  }
+
+  addPockets(numberOfPockets, cost) {
+    this.store.commit('addPockets', { numberOfPockets, cost });
+  }
+
+  fightPolice() {
+    let policeDamage;
+    let damage;
+    let message;
+
+    // You have a 1 in 4 chance of killing the cop
+    let killShot = Math.floor(Math.random() * 100) + 1 >= 75;
+
+    if (killShot) {
+      policeDamage = 0;
+      message = 'The cop fled and you got away!';
+    }
+
+    // You have a 1/6 chance of getting wounded and a 1/25 of getting killed
+    else {
+      let result = Math.floor(Math.random() * 100) + 1;
+
+      if (result >= 96) {
+        damage = 100;
+        message = 'You have been killed!';
+      }
+      else if (result >= 83) {
+        damage = 25;
+        message = `You have been wounded! Your health is ${this.health}%.`;
+      }
+      else {
+        policeDamage = 25;
+        message = 'You wounded the cop but he\'s still after you!';
+      }
+    }
+
+    return { damage, policeDamage, message };
+  }
+
+  runFromPolice() {
+    let result = Math.floor(Math.random() * 100) + 1
+    let lostInventory = false;
+    let gotAway = false;
+    let message;
+
+    // You have a 4% chance of losing your inventory when running
+    if (result >= 96) {
+      message = 'You got away but lost all your inventory.';
+      lostInventory = true;
+      gotAway = true;
+    }
+
+    // You have a 50% chance of getting away cleanly
+    else if (result >= 50) {
+      message = 'You managed to lose him in an alley.';
+      gotAway = true;
+    }
+
+    // You didn't get away
+    else {
+      message = 'You tried to flee but he is still after you!';
+    }
+
+    return { message, lostInventory, gotAway };
   }
 }
 

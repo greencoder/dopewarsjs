@@ -56,12 +56,21 @@ html, body {
 body {
   padding: 0px;
   margin: 0px;
-  font-size: 14px;
+  font-size: 16px;
+  color: #353a3e;
+}
+
+a:link, a:visited, a:hover {
+  color: inherit;
 }
 
 div#app {
   padding: 0px;
   height: 100%;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 /* Desktop browser or mobile in landscape */

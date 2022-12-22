@@ -12,7 +12,7 @@
           :key="item.name"
           :class="classForRow(item)">
         <td>{{ item.available }}</td>
-        <td>{{ item.name|capitalize }}</td>
+        <td class="left">{{ item.name|capitalize }}</td>
         <td>${{ item.price }}</td>
         <td>{{ ownedCountForItem(item.name) }}</td>
       </tr>
@@ -114,7 +114,7 @@ td, th {
 th {
   font-size: 0.75em;
   height: 18px;
-  font-weight: 600;
+  font-weight: 700;
   background-color: #efefef;
 }
 

@@ -7,9 +7,11 @@
       </header>
       <div class="inner">
         <p>Do you want to start a new game?</p>
+      </div>
+      <footer>
         <button @click='handleRestartPress' class="full-width">Restart Game</button>
         <button @click='handlePricesButtonPress' class="full-width">Price List</button>
-      </div>
+      </footer>
     </div>
   </section>
 </template>

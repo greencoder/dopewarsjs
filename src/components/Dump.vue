@@ -6,8 +6,8 @@
         <img src="@/assets/images/close.svg" @click="handleCloseOverlayButtonClick" />
       </header>
       <div class="inner">
-        <p>Nobody is interested in your {{ selectedItem.name|lower }} right now, but you can dump it.</p>
-        <p>How much do you want to dump?</p>
+        <p>Nobody is interested in your {{ selectedItem.name|lower }} right now, but you can dump it to
+          make room for other drugs.</p>
         <p class="subtext">You have {{ inventoryCount|pluralize('unit') }} that you can get rid of.</p>
         <nav>
           <button @click="changeQuantity(0)">None</button>

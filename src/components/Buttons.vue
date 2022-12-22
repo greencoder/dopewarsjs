@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="buttons">
     <nav>
       <button @click="handleBuyButtonClick" v-bind:disabled="buyButtonDisabled">Buy Drugs</button>
       <button @click="handleSellButtonClick" v-bind:disabled="sellButtonDisabled">Sell Drugs</button>
@@ -95,9 +95,9 @@ export default {
 
 <style scoped>
 
-div {
+div#buttons {
   background-color: inherit;
-  padding-top: 20px !important;
+  padding-top: 25px;
 }
 
 nav {

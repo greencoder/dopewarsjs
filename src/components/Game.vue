@@ -53,6 +53,9 @@ export default {
   },
   mounted: function() {
     this.$manager.startGame();
+
+    // this.$store.commit('buyGun', 0);
+    // this.$store.dispatch('showOverlay', 'police');
   },
   computed: {
     isShowingOverlay: function() {
@@ -95,24 +98,25 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  border: 1px solid #353A3F;
+  border: 1px solid #353a3e;
   background-color: inherit;
   border-radius: 8px;
   padding: 0px 16px;
   font-size: 1.0em;
   outline: none;
-  font-weight: normal;
+  font-weight: 400;
+  color: #353a3e;
   height: 40px;
 }
 
 button:active {
-  background-color: #353A3F;
+  background-color: #353a3e;
   color: #fff;
 }
 
 button:disabled {
   border: 1px solid #C0C0C0;
-  color: #C0C0C0;
+  color: #C0C0C0 !important;
 }
 
 button.full-width {
@@ -141,6 +145,7 @@ section.overlay {
   background-color: #464646;
   border: 15px solid #464646;
   padding: 0px;
+  position: relative;
 }
 
 section.overlay div {
@@ -171,8 +176,13 @@ section.overlay div.inner {
 }
 
 section.overlay div.inner p {
-  margin: 10px 0px 20px 5px;
+  margin: 10px 0px 15px 5px;
   line-height: 1.5em;
+}
+
+section.overlay footer {
+  width: 100%;
+  padding: 10px;
 }
 
 </style>

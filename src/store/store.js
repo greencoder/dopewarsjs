@@ -135,6 +135,14 @@ export default new Vuex.Store({
       state.newsItem = null;
       state.inventory = [];
     },
+    addPockets: (state, { numberOfPockets, cost }) => {
+      state.inventoryCapacity += numberOfPockets;
+      state.cash -= cost;
+    },
+    buyGun: (state, cost) => {
+      state.gun = true;
+      state.cash -= cost;
+    },
     buyItem: (state, { item, quantity, cost }) => {
       // Update the inventory
       let inventoryIndex = state.inventory.map(inventoryItem => inventoryItem.name).indexOf(item.name);
