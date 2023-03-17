@@ -109,11 +109,14 @@ class GameManager {
     let newsItem = this.generateNewsItem();
     this.store.commit('updateNewsItem', newsItem);
 
-    // You have a 1/10 chance of being hassled by the police if you have drugs
-    let showPoliceResult = Math.floor(Math.random() * 100) + 1;
+    let randomPolice = Math.floor(Math.random() * 100) + 1;
     let inventoryCount = this.store.getters.inventoryOwned;
+    let hasGun = this.store.getters.hasGun;
+    let policeThreshold = hasGun ? 95 : 85;
 
-    if (showPoliceResult >= 90 && inventoryCount > 0) {
+    // If you have drugs and have a gun, you have a 5% chance of being hassled
+    // by the police. If you have no gun, the chance goes up to 15%
+    if (inventoryCount > 0 && randomPolice >= policeThreshold) {
       this.store.dispatch('showOverlay', 'police');
     }
 
@@ -241,65 +244,56 @@ class GameManager {
     this.store.commit('addPockets', { numberOfPockets, cost });
   }
 
+  resetPolice() {
+    this.policeDamage = 0;
+  }
+
   fightPolice() {
-    let policeDamage;
-    let damage;
-    let message;
+    let policeDamage = 0;
+    let selfDamage = 0;
 
-    // You have a 1 in 4 chance of killing the cop
-    let killShot = Math.floor(Math.random() * 100) + 1 >= 75;
+    // You have a 1 in 4 chance of the cop fleeing
+    let copFled = Math.floor(Math.random() * 100) + 1 >= 75;
 
-    if (killShot) {
-      policeDamage = 0;
-      message = 'The cop fled and you got away!';
+    if (copFled) {
+      policeDamage = 100;
     }
-
-    // You have a 1/6 chance of getting wounded and a 1/25 of getting killed
     else {
       let result = Math.floor(Math.random() * 100) + 1;
 
+      // You have a 4% chance of getting killed
       if (result >= 96) {
-        damage = 100;
-        message = 'You have been killed!';
+        selfDamage = 100;
       }
-      else if (result >= 83) {
-        damage = 25;
-        message = `You have been wounded! Your health is ${this.health}%.`;
+      // You have a 15% chance of getting wounded
+      else if (result >= 85) {
+        selfDamage = 25;
       }
       else {
         policeDamage = 25;
-        message = 'You wounded the cop but he\'s still after you!';
       }
     }
 
-    return { damage, policeDamage, message };
+    return { selfDamage, policeDamage };
   }
 
   runFromPolice() {
     let result = Math.floor(Math.random() * 100) + 1
     let lostInventory = false;
     let gotAway = false;
-    let message;
 
-    // You have a 4% chance of losing your inventory when running
-    if (result >= 96) {
-      message = 'You got away but lost all your inventory.';
+    // You have a 1% chance of losing your inventory when running
+    if (result >= 99) {
       lostInventory = true;
       gotAway = true;
     }
 
     // You have a 50% chance of getting away cleanly
     else if (result >= 50) {
-      message = 'You managed to lose him in an alley.';
       gotAway = true;
     }
 
-    // You didn't get away
-    else {
-      message = 'You tried to flee but he is still after you!';
-    }
-
-    return { message, lostInventory, gotAway };
+    return { lostInventory, gotAway };
   }
 }
 

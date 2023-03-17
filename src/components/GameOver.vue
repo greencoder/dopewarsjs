@@ -5,7 +5,7 @@
         <span>Game Over</span>
       </header>
       <div class="inner">
-        <p><strong>Final Cash: ${{ netWorth }}</strong></p>
+        <p><strong>Final Cash: ${{ formattedNetWorth }}</strong></p>
         <p>{{ message }}</p>
         <button @click="handleNewGameButtonPress" class="full-width">Start New Game</button>
       </div>
@@ -17,14 +17,20 @@
 export default {
   name: 'Tailor',
   computed: {
-    netWorth: function() {
+    netWorth() {
       return this.$store.getters.netWorth;
     },
-    message: function() {
-      if (this.netWorth >= 1000000) {
-        return 'You retired a millionaire in the Carribean.';
+    formattedNetWorth() {
+      return this.netWorth.toLocaleString('en-US');
+    },
+    message() {
+      if (this.netWorth >= 10000000) {
+        return 'You finished with over ten million dollars! Pablo Escobar would be proud.';
       }
-      else if (this.netWorth >= 250000) {
+      else if (this.netWorth >= 1000000) {
+        return 'You retired as a millionaire in the Carribean.';
+      }
+      else if (this.netWorth >= 100000) {
         return 'You have a promising future as a narco.';
       }
       else {

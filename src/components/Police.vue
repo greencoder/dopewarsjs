@@ -56,9 +56,6 @@ export default {
     handleLostInventory: function() {
       this.$manager.resetInventory();
     },
-    handleDamage: function(amount) {
-      this.$store.commit('reduceHealth', amount);
-    },
     handleCloseButtonPress: function() {
       this.$store.dispatch('hideOverlay');
     },
@@ -67,25 +64,49 @@ export default {
         this.$manager.finishGame();
       }
       else {
+        this.gotAway = false;
         this.$store.dispatch('hideOverlay');
       }
     },
     handleRunButtonPress: function() {
-      let { message, lostInventory, gotAway } = this.$manager.runFromPolice();
-
-      this.message = message;
-      this.gotAway = gotAway;
+      let { lostInventory, gotAway } = this.$manager.runFromPolice();
 
       if (lostInventory) {
+        this.message = 'You got away but lost all your inventory.';
         this.handleLostInventory();
+      }
+      else if (gotAway) {
+        this.gotAway = gotAway;
+        this.message = 'You managed to lose him in an alley.';
+        this.$manager.resetPolice();
+      }
+      else {
+        this.message = 'You tried to flee but he is still after you!';
       }
     },
     handleFightButtonPress: function() {
-      let { damage, policeDamage, message } = this.$manager.fightPolice();
+      let { selfDamage, policeDamage } = this.$manager.fightPolice();
 
-      this.handleDamage(damage);
+      let selfWounded = selfDamage > 0;
+      let policeWounded = policeDamage > 0;
+
+      this.$store.commit('reduceHealth', selfDamage);
       this.policeHealth -= policeDamage;
-      this.message = message;
+
+      if (this.health < 1) {
+        this.message = 'You have been killed!';
+      }
+      else if (this.policeHealth < 1) {
+        this.message = 'The cop fled and you got away!';
+        this.gotAway = true;
+        this.$manager.resetPolice();
+      }
+      else if (selfWounded) {
+        this.message = `You have been wounded! Your health is now ${this.health}%`;
+      }
+      else if (policeWounded) {
+        this.message = 'You wounded the cop but he\'s still after you!';
+      }
     }
   }
 }
